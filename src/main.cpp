@@ -11,25 +11,35 @@ void PostInit() {}
 
 TClasslessInstanceHook(Actor*, "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
     BlockSource &region, ActorDefinitionIdentifier const &id, Actor *actor, Vec3 const &pos, Vec3 const &direction) {
-
     if(auto* player = dynamic_cast<Player*>(actor)) {
+
     	//position vector
         Vec3 newPos(pos);
+
         //direction vector
         Vec2 rotation = direct_access<Vec2>(player, 256);
 
-        float rad = 0.0174533f;//M_PI / 180.f
+        //M_PI / 180.f
+        //0.0174533f
+        //(atan(1) * 4)
+        double rad = 3.141592653589 / 180.0;
 
-        rotation.y = (rotation.y + 90.f) * rad;
+        rotation.y = (rotation.y + 90.0) * rad;
         rotation.x = (rotation.x * -rad);
+        double verticalMovement = cos(rotation.x);
 
-        float verticalMovement = cos(rotation.x);
-        newPos.x += (cos(rotation.y) * verticalMovement) * settings.ProjectileZOffset;
-
-        if(id.identifier == "fishing_hook") {
-            newPos.y += (sin(rotation.x) * settings.ProjectileZOffset) + settings.FishingRodYOffset;
+        if (settings.FishingRodOffsetEnabled && id.identifier == "fishing_hook") {
+            newPos.x += (cos(rotation.y) * verticalMovement) * settings.FishingRodZOffset;
+            newPos.y += (sin(rotation.x) * settings.FishingRodZOffset) + settings.FishingRodYOffset;
             newPos.z += (sin(rotation.y) * verticalMovement) * settings.FishingRodZOffset;
-        } else {
+        }
+        else if (settings.SplashPotionOffsetEnabled && id.identifier == "splash_potion") {
+            newPos.x += (cos(rotation.y) * verticalMovement) * settings.SplashPotionZOffset;
+            newPos.y += (sin(rotation.x) * settings.SplashPotionZOffset) + settings.SplashPotionYOffset;
+            newPos.z += (sin(rotation.y) * verticalMovement) * settings.SplashPotionZOffset;
+        }
+        else {
+            newPos.x += (cos(rotation.y) * verticalMovement) * settings.ProjectileZOffset;
             newPos.y += (sin(rotation.x) * settings.ProjectileZOffset) + settings.ProjectileYOffset;
             newPos.z += (sin(rotation.y) * verticalMovement) * settings.ProjectileZOffset;
         }
