@@ -21,8 +21,8 @@ struct Settings {
 	float SplashPotionYOffset = 0.0;
 	float SplashPotionZOffset = 0.0;
 
-	template <typename IO> static inline bool io(IO f, Settings &settings, YAML::Node &node) { 
-		
+	template <typename IO> static inline bool io(IO f, Settings &settings, YAML::Node &node) {
+
 		return f(settings.ProjectileYOffset, node["ProjectileYOffset"]) &&
 			f(settings.ProjectileZOffset, node["ProjectileZOffset"]) &&
 			f(settings.FishingRodOffsetEnabled, node["FishingRodOffsetEnabled"]) &&
